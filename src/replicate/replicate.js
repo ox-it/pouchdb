@@ -77,7 +77,8 @@ function replicate(src, target, opts, returnValue, result) {
       allErrors = allErrors.concat(errors);
       result.docs_written += currentBatch.docs.length - errors.length;
       var non403s = errors.filter(function (error) {
-        return error.name !== 'unauthorized' && error.name !== 'forbidden';
+        // return error.name !== 'unauthorized' && error.name !== 'forbidden';
+        return error.status !== 403;
       });
 
       docs.forEach(function(doc) {
@@ -246,7 +247,8 @@ function replicate(src, target, opts, returnValue, result) {
     result.last_seq = last_seq;
     replicationCompleted = true;
     var non403s = allErrors.filter(function (error) {
-      return error.name !== 'unauthorized' && error.name !== 'forbidden';
+    //   return error.name !== 'unauthorized' && error.name !== 'forbidden';
+      return error.status !== 403;
     });
     if (non403s.length > 0) {
       var error = allErrors.pop();
