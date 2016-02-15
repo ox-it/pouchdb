@@ -10186,7 +10186,15 @@ function replicate(src, target, opts, returnValue, result) {
     var non403s = allErrors.filter(function (error) {
       return error.status != 403;
     });
-    if (non403s.length > 0) {
+    var all401s = allErrors.filter(function (error) {
+        return error.status == 401;
+    });
+
+    if(result.docs_read == 0 && result.docs_written == 0 && all401s.length >= 0) {
+        result.errors = allErrors;
+        returnValue.emit('error', result);
+        returnValue.removeAllListeners();
+    } else if (non403s.length > 0) {
       var error = allErrors.pop();
       if (allErrors.length > 0) {
         error.other_errors = allErrors;
@@ -10201,7 +10209,6 @@ function replicate(src, target, opts, returnValue, result) {
       returnValue.removeAllListeners();
     }
   }
-
 
   function onChange(change) {
     if (state.cancelled) {
